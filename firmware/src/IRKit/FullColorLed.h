@@ -25,6 +25,9 @@ public:
     void setLedColor(bool colorR, bool colorG, bool colorB, bool blink);
     void setLedColor(bool colorR, bool colorG, bool colorB, bool blink, uint8_t blink_timeout);
     void off();
+    
+    void setSleep(uint8_t sleep_timeout); // 追加：スリープ時間設定メソッド
+    
     void onTimer();
 
 private:
@@ -37,6 +40,9 @@ private:
     bool isBlinking_; // defaults to off
     volatile bool blinkOn_; // altered inside timer ISR
     volatile uint8_t blink_timer_;
+    
+    volatile uint8_t sleep_timeout_;  // 追加：スリープ時間格納変数
+    volatile uint8_t sleep_timer_;    // 追加：スリープタイマー用変数
 };
 
 #endif // __FULLCOLORLED_H__

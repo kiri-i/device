@@ -24,8 +24,15 @@ FullColorLed::FullColorLed(int pinR, int pinG, int pinB) :
     pinB_(pinB),
     blinkOn_(0),
     isBlinking_(false),
-    blink_timer_(TIMER_OFF)
+    blink_timer_(TIMER_OFF),    
+    sleep_timeout_(TIMER_OFF),  // 追加；スリープ時間の初期値
+    sleep_timer_(TIMER_OFF)     // 追加；スリープタイマーの初期値
 {
+}
+
+// 追加：スリープ時間設定メソッド
+void FullColorLed::setSleep(uint8_t sleep_timeout) {
+    sleep_timeout_ = sleep_timeout;
 }
 
 void FullColorLed::setLedColor(bool colorR, bool colorG, bool colorB) {
@@ -39,6 +46,12 @@ void FullColorLed::setLedColor(bool colorR, bool colorG, bool colorB, bool blink
     isBlinking_  = blink;
 
     blink_timer_ = TIMER_OFF;
+
+    // 追加：開始
+    if (sleep_timeout_ != TIMER_OFF) {            // スリープ時間がTIMER_OFF(=無効)でなかったら
+      TIMER_START(sleep_timer_, sleep_timeout_);  // スリープタイマーを起動
+    }
+    // 追加：終了  
 }
 
 void FullColorLed::setLedColor(bool colorR, bool colorG, bool colorB, bool blink, uint8_t blink_timeout) {
@@ -49,6 +62,7 @@ void FullColorLed::setLedColor(bool colorR, bool colorG, bool colorB, bool blink
 
 void FullColorLed::off() {
     setLedColor( 0, 0, 0, false );
+    TIMER_STOP(sleep_timer_);       // 追加：スリープタイマーを停止   
 }
 
 void FullColorLed::onTimer() {
@@ -71,4 +85,11 @@ void FullColorLed::onTimer() {
         TIMER_STOP(blink_timer_);
         isBlinking_ = false;
     }
+    // 追加：開始
+    TIMER_TICK(sleep_timer_);         // スリープタイマーを進める
+    if (TIMER_FIRED(sleep_timer_)) {  // スリープタイマーが発火したら
+      off();                          // LEDを消灯する
+    }
+    // 追加：終了
+    
 }

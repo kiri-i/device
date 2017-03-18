@@ -211,7 +211,8 @@ void process_commands() {
 }
 
 void on_irkit_ready() {
-    color.setLedColor( 0, 0, 1, false ); // blue: ready
+    color.setSleep(3);                    // 追加：LEDスリープ時間を3秒に設定
+    color.setLedColor( 0, 0, 1, false );  // blue: ready
 }
 
 void on_ir_receive() {
